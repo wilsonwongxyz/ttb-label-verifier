@@ -12,7 +12,7 @@ A prototype that checks an alcohol label photo against its TTB label application
 | Need from the interviews | How the prototype answers it |
 |---|---|
 | "Half their day is just matching" (Sarah) | Brand, class/type, alcohol content, net contents, bottler, country of origin and the health warning are checked automatically. Problems are listed first, each with the reason. |
-| Results in about 5 seconds, or nobody uses it | One fast model call per label (Claude Haiku 5.5, low effort), images shrunk before sending, a 3.5 s budget for the model call. |
+| Results in about 5 seconds, or nobody uses it | One fast model call per label (Claude Haiku 5.5, low effort) with images shrunk before sending. Measured: 1.8 s median, 3.0 s at the 95th percentile. |
 | "Something my mother could figure out" | One page, one button, large type, plain words, works on a phone and without JavaScript, results shown by icon and word as well as colour. |
 | Batches of 200–300 from importers (Janet) | Upload the photos plus one CSV. Labels are checked 8 at a time; results appear live with problems first; export to CSV. One bad row never blocks the batch. |
 | "You need judgment" – STONE'S THROW vs Stone's Throw (Dave) | Case and punctuation differences count as a match with a note. Near misses go to review. In batches, agents can override any verdict with a reason; the tool's original verdict stays visible. |
@@ -75,7 +75,14 @@ Every decision, its reason and its cost is in [`docs/DECISIONS.md`](docs/DECISIO
 - each as a clean scan plus two simulated phone photos (angle, glare, blur, dim light, compression);
 - one "not a label" control.
 
-The headline metric is **false clears**, which must be 0. Results are in [`evals/RESULTS.md`](evals/RESULTS.md); method in [`evals/README.md`](evals/README.md).
+The headline metric is **false clears**, which must be 0. Latest results (prompt 2026-10-08.2):
+
+| Model | False clears | Status exact | Acceptable | Field verdicts | p50 | p95 | Cost / label |
+|---|---|---|---|---|---|---|---|
+| **Claude Haiku 5.5** (default, 68 checks) | **0** | 98.5% | 100% | 99.5% | 1.8 s | 3.0 s | $0.0006 |
+| Claude Sonnet 5.5 (34 checks) | 0 | 100% | 100% | 100% | 3.0 s | 3.3 s | $0.011 |
+
+Haiku's single miss was a cautious "Needs review" on a degraded photo. The first real run also surfaced a real issue: the model sometimes split the warning's lead-in from the statement. It was fixed in the rules and the schema (DECISIONS.md D20). Full history is in [`evals/RESULTS.md`](evals/RESULTS.md); method in [`evals/README.md`](evals/README.md). These are synthetic labels, so real bottle photos will be harder.
 
 ## Setup
 

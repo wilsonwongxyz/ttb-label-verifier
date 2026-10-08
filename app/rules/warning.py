@@ -23,6 +23,23 @@ def _words(text: str) -> list[str]:
     return _WORD.findall(text.casefold())
 
 
+def statement_as_printed(read: WarningRead) -> str:
+    """The whole statement, lead-in included.
+
+    The model sometimes reports the lead-in only in ``prefix_as_printed`` and starts
+    ``full_text`` after it. The lead-in was still read off the label, so it is put back.
+    When the label has no lead-in, ``prefix_as_printed`` is empty and nothing is added.
+    """
+    assert read.full_text is not None
+    text = clean(read.full_text)
+    if not is_blank(read.prefix_as_printed):
+        assert read.prefix_as_printed is not None
+        prefix = clean(read.prefix_as_printed)
+        if not text.casefold().startswith(prefix.casefold()):
+            text = f"{prefix} {text}"
+    return text
+
+
 def check_warning_text(read: WarningRead) -> FieldResult:
     """The statement must be word-for-word identical to the regulation (V-5)."""
     field, label = "warning_text", "Health warning wording"
@@ -37,8 +54,7 @@ def check_warning_text(read: WarningRead) -> FieldResult:
             found=None,
             reason="No government health warning found on the label.",
         )
-    assert read.full_text is not None
-    found = clean(read.full_text)
+    found = statement_as_printed(read)
 
     required_chunks = REQUIRED_WARNING.split(" ")
     found_chunks = found.split(" ")

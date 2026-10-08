@@ -2,7 +2,7 @@
 
 from app.rules.models import BeverageType
 
-PROMPT_VERSION = "2026-10-08.1"
+PROMPT_VERSION = "2026-10-08.2"
 
 SYSTEM_PROMPT = """\
 You transcribe alcohol beverage labels for U.S. TTB compliance reviewers.

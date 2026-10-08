@@ -34,8 +34,9 @@ class WarningRead(BaseModel):
     """The government health warning statement as printed on the label."""
 
     full_text: str | None = Field(
-        description="The whole warning statement exactly as printed, from its first word to "
-        "its last, with line breaks replaced by single spaces. Copy wording, case and "
+        description="The whole warning statement exactly as printed, starting with its lead-in "
+        '(e.g. "GOVERNMENT WARNING:") and ending with its last word, with line breaks '
+        "replaced by single spaces. Copy wording, case and "
         "punctuation exactly even if they differ from the standard statement; never fix or "
         "complete it. null if there is no warning."
     )

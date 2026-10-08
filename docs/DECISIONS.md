@@ -110,3 +110,20 @@ The headline metric is the **false-clear count**: an "All clear" on a label with
 **Decision:** `render.yaml` deploys the Docker image on a paid, single instance. `docs/DEPLOYMENT.md` also gives Azure Container Apps commands. The container honours `$PORT` and proxy headers.
 **Why:** Render is the fastest route to a working URL for the assignment. Azure matches TTB's platform for any follow-on (Marcus). The free tier was rejected because a 30–60 s cold start would break the 5-second promise on a reviewer's first visit.
 **Cost:** About $7/month while the demo is up.
+
+### D19. Keep Claude Haiku 5.5 after measuring it against Sonnet 5.5
+**Decision:** The default stays `claude-haiku-5-5` at low effort.
+**Evidence** (`evals/RESULTS.md`, prompt 2026-10-08.2, 34-case set):
+
+| | False clears | Status exact | Acceptable | p50 | p95 | $/label |
+|---|---|---|---|---|---|---|
+| Haiku 5.5 (2 passes) | 0 | 98.5% | 100% | 1.8 s | 3.0 s | $0.0006 |
+| Sonnet 5.5 (1 pass) | 0 | 100% | 100% | 3.0 s | 3.3 s | $0.011 |
+
+**Why:** Equal on the metrics that matter (no false passes, every answer acceptable), clearly faster against the 5-second budget, and 19× cheaper. Haiku's one miss was a cautious "Needs review" on a degraded photo.
+**Cost:** Slightly more "please check" results on poor photos. If real-world photos prove harder, Sonnet is a one-setting change (`LV_MODEL`).
+
+### D20. Put a separately reported warning lead-in back before comparing
+**Decision:** If the model reports "GOVERNMENT WARNING:" in `prefix_as_printed` but leaves it out of `full_text`, the rules prepend it before the word-for-word check. The schema now also asks for the lead-in inside `full_text`.
+**Why:** Found in the first real evaluation run: 6 correct labels were flagged "Issues found" because the two fields split the statement ambiguously. The lead-in was genuinely read off the label, so restoring it is faithful.
+**Cost:** None to safety. A label without a lead-in has an empty `prefix_as_printed`, so nothing is added and it is still flagged (tested).

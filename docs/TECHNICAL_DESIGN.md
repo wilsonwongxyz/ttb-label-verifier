@@ -301,6 +301,6 @@ Dockerfile, pyproject.toml (uv), README.md
 | # | Decision | Default if not decided |
 |---|---|---|
 | D1 | Hosting target: Azure Container Apps vs. Render/Fly.io | Render blueprint and Azure steps both ready (`docs/DEPLOYMENT.md`); the account owner picks |
-| D2 | Final model tier | Set by the §9.2 eval; Haiku 5.5 expected |
+| D2 | Final model tier | **Decided: Haiku 5.5** (0 false clears, p95 3.0 s; see DECISIONS.md D19) |
 | D3 | Whether to gate the public demo behind an access code | Built (`LV_ACCESS_CODE`); recommended on for a public URL |
 | D4 | Build the P2 `OcrExtractor` | Only if time remains after M1–M3 |

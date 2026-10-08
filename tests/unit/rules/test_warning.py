@@ -59,6 +59,24 @@ def test_diff_spans_rebuild_both_texts() -> None:
     assert changed == [("not drink ", "avoid drinking ")]
 
 
+def test_lead_in_reported_separately_is_put_back() -> None:
+    # Seen with real model output: the lead-in only in prefix_as_printed.
+    read = warning(BODY, prefix="GOVERNMENT WARNING:")
+    assert check_warning_text(read).verdict == Verdict.MATCH
+    assert check_warning_prefix(read).verdict == Verdict.MATCH
+
+
+def test_missing_lead_in_is_still_caught() -> None:
+    # No lead-in on the label: nothing to put back, so the wording check fails.
+    assert check_warning_text(warning(BODY, prefix=None)).verdict == Verdict.MISMATCH
+
+
+def test_title_case_lead_in_reported_separately_still_fails_capitals() -> None:
+    read = warning(BODY, prefix="Government Warning:")
+    assert check_warning_text(read).verdict == Verdict.MATCH_NOTED
+    assert check_warning_prefix(read).verdict == Verdict.MISMATCH
+
+
 def test_missing_warning_is_a_mismatch() -> None:
     result = check_warning_text(warning(None))
     assert result.verdict == Verdict.MISMATCH
