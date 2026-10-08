@@ -90,7 +90,7 @@ The model extracts the values and deterministic code compares them. The model ne
 | V-2 | Class/type | Same normalization as V-1. | P0 |
 | V-3 | Alcohol content | Parse the numeric ABV from formats such as "45% Alc./Vol.", "Alc. 45% by Vol.", "45% ABV". Numbers must be equal. If a proof value is present, check that proof = 2 × ABV. Unparseable → **Needs Review**. | P0 |
 | V-4 | Net contents | Parse quantity and unit, convert to mL (mL, cL, L, fl oz), and compare values. "750 mL" = "75 cL" → **Match (noted)**. | P0 |
-| V-5 | Government warning (text) | The text must match the 27 CFR §16.21 statement word for word, compared after normalizing whitespace and line breaks only. Any word-level difference → **Mismatch**, with a word-level diff. Missing → **Mismatch**. | P0 |
+| V-5 | Government warning (text) | The text must match the 27 CFR §16.21 statement word for word, compared after normalizing whitespace and line breaks only. Any added, missing or changed word → **Mismatch**, with a word-level diff. Differences only in punctuation → **Needs Review** (it could be an OCR error). Missing → **Mismatch**. | P0 |
 | V-6 | Government warning (prefix) | "GOVERNMENT WARNING:" must be all caps exactly as written. Title case or lower case → **Mismatch**. | P0 |
 | V-7 | Government warning (bold) | Bold weight cannot be judged reliably from a photo, so report the model's assessment as **Needs Review**, never as Match. | P1 |
 | V-8 | Bottler name/address, country of origin | Normalized fuzzy comparison. Default to **Needs Review** on any difference (addresses vary in format). Country of origin is required only when the item is marked as imported. | P1 |
@@ -149,7 +149,7 @@ Reference warning text (27 CFR §16.21):
 - **Why deterministic comparison:** it is explainable and unit-testable, and it can't hallucinate a "Match."
 - **Provider abstraction:** this addresses Marcus's firewall concern. It also allows benchmarking several models for latency and accuracy.
 - **Batch:** a server-side worker pool with a concurrency cap and per-item streaming (SSE or polling).
-- Stack choice is deferred to a separate tech-design note. The main criteria are deployment speed and simplicity.
+- Stack, model selection and detailed design: see [`TECHNICAL_DESIGN.md`](./TECHNICAL_DESIGN.md).
 
 ## 11. Risks and open questions
 
