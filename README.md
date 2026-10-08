@@ -19,6 +19,7 @@ An AI-assisted tool that checks alcohol label images against the values in a TTB
 
 - [`docs/PRD.md`](docs/PRD.md): problem, users, requirements, success metrics, and how each stakeholder remark maps to a requirement.
 - [`docs/TECHNICAL_DESIGN.md`](docs/TECHNICAL_DESIGN.md): architecture, latency budget, model selection, rule definitions, testing and trade-offs.
+- [`docs/DECISIONS.md`](docs/DECISIONS.md): log of the key design decisions, each with its reason and cost.
 
 ## Setup
 
