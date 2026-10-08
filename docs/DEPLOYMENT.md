@@ -2,6 +2,10 @@
 
 The app is one Docker container with no database. It must run as a **single instance**, because batch jobs live in memory (DECISIONS.md D13).
 
+## Current deployment
+
+Render web service, Docker, single instance: **https://label-verifier-jltd.onrender.com**, behind an access code. `GET /healthz` is open for monitoring.
+
 ## Settings
 
 | Variable | Required | Notes |

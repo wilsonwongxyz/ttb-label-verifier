@@ -4,7 +4,7 @@ A prototype that checks an alcohol label photo against its TTB label application
 
 > The original assignment brief is in [`docs/ASSIGNMENT.md`](docs/ASSIGNMENT.md).
 
-- **Live demo:** _URL to be added after deployment_ (see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md))
+- **Live demo:** https://label-verifier-jltd.onrender.com (access code provided separately; deployment notes in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md))
 - **Try it locally without an API key:** `uv sync && LV_PROVIDER=fixture uv run uvicorn --factory app.main:create_app`, then open http://localhost:8000 and pick an example.
 
 ## What it does
