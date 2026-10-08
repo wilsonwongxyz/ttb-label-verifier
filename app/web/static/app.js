@@ -1,4 +1,33 @@
 // Progressive enhancement only: the form works without this script.
+// Busy state for any long-running form, so nobody clicks twice.
+document.querySelectorAll("[data-busy-form]").forEach((busyForm) => {
+  busyForm.addEventListener("submit", () => {
+    const button = busyForm.querySelector("[data-submit]");
+    button.disabled = true;
+    button.textContent = button.textContent.startsWith("Start") ? "Uploading…" : "Checking…";
+    const working = busyForm.querySelector("[data-working]");
+    if (working) working.hidden = false;
+  });
+});
+
+// Batch results: refresh the table until the batch finishes.
+(() => {
+  const holder = document.querySelector("[data-batch-table]");
+  if (!holder) return;
+  const finished = () => holder.querySelector("[data-finished]")?.dataset.finished === "yes";
+  const tick = async () => {
+    if (finished()) return;
+    try {
+      const response = await fetch(holder.dataset.src, { headers: { "Cache-Control": "no-cache" } });
+      if (response.ok) holder.innerHTML = await response.text();
+    } catch {
+      // Network blip: try again on the next tick.
+    }
+    if (!finished()) setTimeout(tick, 1500);
+  };
+  setTimeout(tick, 1500);
+})();
+
 (() => {
   const form = document.querySelector("[data-check-form]");
   if (!form) return;
@@ -45,10 +74,4 @@
     }
   });
 
-  form.addEventListener("submit", () => {
-    const button = form.querySelector("[data-submit]");
-    button.disabled = true;
-    button.textContent = "Checking…";
-    form.querySelector("[data-working]").hidden = false;
-  });
 })();

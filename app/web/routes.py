@@ -69,7 +69,7 @@ SettingsDep = Annotated[Settings, Depends(get_settings)]
 ExtractorDep = Annotated[LabelExtractor, Depends(get_extractor)]
 
 
-def _render(
+def render_page(
     request: Request, name: str, settings: Settings, status_code: int = 200, **context: Any
 ) -> HTMLResponse:
     return templates.TemplateResponse(
@@ -94,7 +94,7 @@ def _render_form(
     page_error: str | None = None,
     status_code: int = 200,
 ) -> HTMLResponse:
-    return _render(
+    return render_page(
         request,
         "check.html",
         settings,
@@ -155,17 +155,18 @@ async def check(request: Request, settings: SettingsDep, extractor: ExtractorDep
     return _render_result(request, settings, result)
 
 
-def _render_result(request: Request, settings: Settings, result: LabelCheck) -> HTMLResponse:
+def result_context(result: LabelCheck) -> dict[str, Any]:
+    """Template context for result.html."""
     rows = sorted(result.report.fields, key=lambda f: _VERDICT_ORDER.index(f.verdict))
-    image_uri = "data:image/jpeg;base64," + base64.b64encode(result.image.data).decode()
-    return _render(
-        request,
-        "result.html",
-        settings,
-        status=STATUS_DISPLAY[result.report.status],
-        rows=rows,
-        verdicts=VERDICT_DISPLAY,
-        quality_issues=result.extraction.quality_issues,
-        image_uri=image_uri,
-        seconds=sum(result.timings_ms.values()) / 1000,
-    )
+    return {
+        "status": STATUS_DISPLAY[result.report.status],
+        "rows": rows,
+        "verdicts": VERDICT_DISPLAY,
+        "quality_issues": result.extraction.quality_issues,
+        "image_uri": "data:image/jpeg;base64," + base64.b64encode(result.image.data).decode(),
+        "seconds": sum(result.timings_ms.values()) / 1000,
+    }
+
+
+def _render_result(request: Request, settings: Settings, result: LabelCheck) -> HTMLResponse:
+    return render_page(request, "result.html", settings, **result_context(result))

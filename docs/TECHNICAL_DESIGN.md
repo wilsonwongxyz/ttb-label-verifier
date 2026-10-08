@@ -176,7 +176,7 @@ The rule engine is the most heavily tested part of the system (§9.1). Every exa
 
 ## 7. Batch processing (`batch/`)
 
-**Input (F-4):** one multipart POST with N images and one CSV or XLSX file. The downloadable template has these columns:
+**Input (F-4):** one multipart POST with N images and one CSV file (XLSX deferred, see DECISIONS D13). The downloadable template has these columns:
 
 ```
 image_filename, beverage_type, brand_name, class_type, alcohol_content, net_contents,

@@ -58,3 +58,26 @@ Short records of the decisions that shape this prototype, newest last. Each entr
 **Decision:** `scripts/make_samples.py` draws five labels, each with one planted issue (or none), and records exactly what is printed on them.
 **Why:** It provides demo content, end-to-end test fixtures and evaluation ground truth from one source, without depending on copyrighted real labels.
 **Cost:** Clean digital labels are easier to read than real bottle photos. The evaluation adds degraded variants to compensate.
+
+### D12. Batch: one bad row never blocks the batch
+**Decision:** There's no blocking pre-flight step. Rows with problems (missing fields, no matching photo) and photos without a row appear in the results as **Not checked**, with the reason. Everything else is checked straight away.
+**Why:** For a 300-label importer drop, holding up 299 good labels for one typo would be worse than listing the typo with the results. It also removes a step for the user.
+**Cost:** Problems are reported after the upload rather than before it. They are sorted to the top of the results, so they're the first thing seen.
+
+### D13. Batch: CSV only, in-memory jobs, bounded concurrency
+**Decision:**
+- The spreadsheet must be CSV (Excel saves it). XLSX isn't parsed.
+- Jobs live in process memory: 8 labels are checked at once, with at most 300 files or 300 MB per batch.
+- Results are deleted 1 hour after the batch finishes.
+- Uploads that hit a temporary model failure are kept so "Retry failed labels" can re-run just those.
+- The results table refreshes every 1.5 s, or by page reload when JavaScript is off.
+
+**Why:** It meets the 300-labels-in-minutes target (N-2) with no queue, database or extra service to run.
+**Cost:**
+- The app must run as a single instance, and a restart loses unfinished batches. The production path is a durable queue (§7).
+- The web framework (Starlette) writes uploads larger than 1 MB to a temporary file, which is deleted when the request ends. So "nothing stored" (D8) holds only at the application level. This is acceptable for the prototype and worth noting for a security review.
+
+### D14. Spreadsheet export is protected against formula injection
+**Decision:** Any exported cell starting with `=`, `+`, `-`, `@`, a tab or a carriage return is prefixed with `'`.
+**Why:** Label text comes from applicants. A brand name such as `=HYPERLINK(...)` would otherwise run as a formula when an agent opens the export in Excel.
+**Cost:** Values that genuinely start with those characters show a leading apostrophe in the CSV.

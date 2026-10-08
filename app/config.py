@@ -30,6 +30,11 @@ class Settings(BaseSettings):
 
     max_image_bytes: int = 10 * 1024 * 1024
 
+    batch_concurrency: int = 8
+    batch_max_files: int = 300
+    batch_max_bytes: int = 300 * 1024 * 1024
+    batch_ttl_s: float = 3600.0
+
 
 @lru_cache
 def get_settings() -> Settings:

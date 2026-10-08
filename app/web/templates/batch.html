@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Check many labels{% endblock %}
+{% block content %}
+<h1>Check many labels</h1>
+
+{% if error %}
+<div class="alert" role="alert"><p><strong>{{ error }}</strong></p></div>
+{% endif %}
+
+<form class="batch-form" method="post" action="/batch" enctype="multipart/form-data" data-busy-form>
+  <section class="panel" aria-labelledby="sheet-heading">
+    <h2 id="sheet-heading"><span class="step">1</span> Application details</h2>
+    <p>One row per label: a spreadsheet saved as <strong>CSV</strong>, with the photo's file name in the <code>image_filename</code> column.</p>
+    <p><a href="/batch/template.csv">Download the template (CSV)</a></p>
+    <label class="file-label" for="spreadsheet">Choose spreadsheet</label>
+    <input class="file-input" id="spreadsheet" name="spreadsheet" type="file" accept=".csv,text/csv">
+  </section>
+
+  <section class="panel" aria-labelledby="images-heading">
+    <h2 id="images-heading"><span class="step">2</span> Label photos</h2>
+    <p>Select all the photos at once. File names must match the spreadsheet.</p>
+    <label class="file-label" for="images">Choose photos</label>
+    <input class="file-input" id="images" name="images" type="file" multiple accept="image/jpeg,image/png,image/webp">
+    <p class="hint">Up to {{ max_files }} photos and {{ max_mb }} MB per batch.</p>
+  </section>
+
+  <div class="actions">
+    <button class="primary" type="submit" data-submit>Start checking</button>
+    <p class="working" role="status" aria-live="polite" data-working hidden>Uploading&hellip;</p>
+  </div>
+</form>
+
+<section class="examples" aria-labelledby="example-heading">
+  <h2 id="example-heading">Try an example</h2>
+  <form method="post" action="/batch/example">
+    <button class="secondary" type="submit">Check the {{ samples | list | length }} example labels as a batch</button>
+  </form>
+</section>
+{% endblock %}

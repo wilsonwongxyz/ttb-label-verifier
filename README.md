@@ -12,7 +12,7 @@ An AI-assisted tool that checks alcohol label images against the values in a TTB
 | Rule engine (all field and warning rules) with tests | ✅ |
 | Image preparation and Claude extraction, offline demo mode | ✅ |
 | Single-label web page | ✅ |
-| Batch upload | ⏳ next |
+| Batch upload with live results and CSV export | ✅ |
 | Evaluation harness and model selection | ⏳ |
 
 ## Documentation

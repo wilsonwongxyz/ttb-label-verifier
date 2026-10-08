@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Batch results{% endblock %}
+{% block head %}
+{% if not job.finished %}<noscript><meta http-equiv="refresh" content="3"></noscript>{% endif %}
+{% endblock %}
+{% block content %}
+<h1>Batch results</h1>
+<div data-batch-table data-src="/batch/{{ job.id }}/table?show={{ show }}">
+  {% include "_batch_table.html" %}
+</div>
+<p class="hint">Results are kept for one hour after the batch finishes, then deleted.</p>
+{% endblock %}

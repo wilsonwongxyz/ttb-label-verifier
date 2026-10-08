@@ -5,12 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Label Check{% endblock %} · Label Verifier</title>
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  {% block head %}{% endblock %}
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header">
     <a class="site-name" href="/">Label Verifier</a>
-    <span class="site-tagline">Checks a label photo against its application</span>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/">Check one label</a>
+      <a href="/batch">Check many labels</a>
+    </nav>
   </header>
   {% if demo_mode %}
   <p class="demo-banner" role="note">
