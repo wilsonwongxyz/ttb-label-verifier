@@ -158,7 +158,8 @@ async def batch_template() -> Response:
 async def start_batch(
     request: Request, settings: SettingsDep, extractor: ExtractorDep
 ) -> HTMLResponse | RedirectResponse:
-    data = await request.form(max_files=settings.batch_max_files + 2)
+    # Let our own limit (with its friendly message) apply well before the framework's.
+    data = await request.form(max_files=max(1000, settings.batch_max_files * 2))
     sheet = data.get("spreadsheet")
     uploads = [u for u in data.getlist("images") if isinstance(u, UploadFile) and u.filename]
 

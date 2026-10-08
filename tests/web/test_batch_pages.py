@@ -155,6 +155,12 @@ def test_upload_problems_are_explained() -> None:
         too_many = upload(client, NAMES[:3])
         assert too_many.status_code == 422
         assert "the limit is 2 per batch" in too_many.text
+        # Far over the limit still gets the friendly message, not a framework error.
+        many = [("images", (f"{n}.png", b"x", "image/png")) for n in range(40)]
+        many.append(("spreadsheet", ("apps.csv", spreadsheet(NAMES[:1]), "text/csv")))
+        flood = client.post("/batch", files=many)
+        assert flood.status_code == 422
+        assert "That&#39;s 40 photos" in flood.text
 
 
 def test_unknown_batch_is_a_friendly_404() -> None:
