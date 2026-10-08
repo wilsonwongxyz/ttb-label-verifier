@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     batch_max_bytes: int = 300 * 1024 * 1024
     batch_ttl_s: float = 3600.0
 
+    # When set, visitors must enter this code once (protects a public demo's API spend).
+    access_code: SecretStr | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:

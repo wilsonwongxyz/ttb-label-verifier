@@ -96,3 +96,17 @@ Short records of the decisions that shape this prototype, newest last. Each entr
 The headline metric is the **false-clear count**: an "All clear" on a label with a real problem, which must be 0. A degraded photo may land on "Needs review" or "Can't read" without counting as wrong.
 **Why:** Ground truth is exact (we drew the text), the cases map one-to-one to the requirements, and we avoid using real applicants' labels. Scoring caution as acceptable matches PRD §8.
 **Cost:** Synthetic labels are cleaner than real bottles (no curved surfaces or decorative fonts), so real-world accuracy will be lower. Adding real public COLA images is the obvious next step.
+
+### D17. Public-demo safeguards: access code, size cap, spend limit
+**Decision:**
+- An optional `LV_ACCESS_CODE` gates every page except `/healthz`. The cookie holds an HMAC of the code, not the code itself, and post-login redirects stay on-site.
+- Requests declaring a body far over the batch limit are refused with 413 before being read.
+- The README tells the key owner to set a monthly spend limit in the Anthropic console.
+
+**Why:** The deployed URL is public and every check costs money, so a stranger shouldn't be able to run up the bill or fill the disk with uploads.
+**Cost:** Reviewers need the code. Uploads that don't declare their size (chunked) are only limited after they've been read.
+
+### D18. Deployment: Render blueprint for speed, Azure Container Apps documented
+**Decision:** `render.yaml` deploys the Docker image on a paid, single instance. `docs/DEPLOYMENT.md` also gives Azure Container Apps commands. The container honours `$PORT` and proxy headers.
+**Why:** Render is the fastest route to a working URL for the assignment. Azure matches TTB's platform for any follow-on (Marcus). The free tier was rejected because a 30–60 s cold start would break the 5-second promise on a reviewer's first visit.
+**Cost:** About $7/month while the demo is up.

@@ -13,4 +13,5 @@ RUN uv sync --frozen --no-dev
 RUN useradd --create-home appuser
 USER appuser
 EXPOSE 8000
-CMD ["/srv/.venv/bin/uvicorn", "--factory", "app.main:create_app", "--host", "0.0.0.0", "--port", "8000"]
+# Hosting platforms pass the port in $PORT; proxy headers keep https:// URLs and secure cookies right.
+CMD ["sh", "-c", "exec /srv/.venv/bin/uvicorn --factory app.main:create_app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]
