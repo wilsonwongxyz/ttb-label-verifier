@@ -10,8 +10,8 @@ An AI-assisted tool that checks alcohol label images against the values in a TTB
 |---|---|
 | Project scaffold, CI, Docker | ✅ |
 | Rule engine (all field and warning rules) with tests | ✅ |
-| Image preparation and model extraction | ⏳ next |
-| Single-label UI | ⏳ |
+| Image preparation and Claude extraction, offline demo mode | ✅ |
+| Single-label UI | ⏳ next |
 | Batch upload | ⏳ |
 | Evaluation harness and model selection | ⏳ |
 
@@ -36,6 +36,28 @@ docker build -t label-verifier .
 docker run -p 8000:8000 label-verifier
 ```
 
+## Configuration
+
+Settings come from `LV_`-prefixed environment variables or a `.env` file (see [`.env.example`](.env.example)).
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LV_PROVIDER` | `anthropic` | `anthropic` calls Claude. `fixture` is a keyless offline demo that only recognizes the sample labels in `app/samples/`. |
+| `LV_ANTHROPIC_API_KEY` | (none) | Required when `LV_PROVIDER=anthropic`. |
+| `LV_MODEL` | `claude-haiku-5-5` | Extraction model. |
+| `LV_EFFORT` | `low` | Model effort; low keeps latency inside the 5-second budget. |
+
+The `LV_` prefix keeps the app's key separate from any `ANTHROPIC_*` variables your shell already sets for other tools.
+
+### Getting an API key
+
+1. Sign in at [console.anthropic.com](https://console.anthropic.com) and add a small prepaid credit under **Billing**.
+2. Under **Limits**, set a monthly spend limit (for example $10), so a public demo can never cost more than that.
+3. Under **API keys**, create a key and set it as `LV_ANTHROPIC_API_KEY`.
+4. Check it with `uv run python scripts/smoke_extract.py`, which reads the five sample labels and compares the results with what is actually printed on them (about $0.003 in total).
+
+Without a key, run the offline demo with `LV_PROVIDER=fixture`.
+
 ## Development
 
 ```bash
@@ -43,7 +65,10 @@ uv run pytest          # tests
 uv run ruff check .    # lint
 uv run ruff format .   # format
 uv run mypy            # type check (strict)
+uv run python scripts/make_samples.py   # regenerate the synthetic sample labels
 ```
+
+Tests never call the API: the Claude extractor is tested against a fake client, and everything else uses recorded readings of the sample labels.
 
 ## How verification works
 

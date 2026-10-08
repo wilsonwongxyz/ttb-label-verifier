@@ -9,6 +9,9 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "pydantic>=2.8",
     "rapidfuzz>=3.9",
+    "anthropic>=1.12.1",
+    "pillow>=12.3.0",
+    "pydantic-settings>=2.15.0",
 ]
 
 [dependency-groups]
@@ -17,6 +20,7 @@ dev = [
     "httpx2>=2.13",
     "ruff>=0.6",
     "mypy>=1.11",
+    "pytest-asyncio>=1.4.0",
 ]
 
 [build-system]
@@ -29,6 +33,7 @@ packages = ["app"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+asyncio_mode = "auto"
 
 [tool.ruff]
 line-length = 100

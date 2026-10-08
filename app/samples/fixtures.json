@@ -1,0 +1,259 @@
+{
+  "samples": [
+    {
+      "name": "old_tom_bourbon",
+      "title": "Old Tom bourbon (everything matches)",
+      "file": "old_tom_bourbon.png",
+      "sha256": "9ed2c38a58d7711c1d04b08bec7207b5683483eafdf072b3bef964ad5faa2a44",
+      "application": {
+        "beverage_type": "distilled_spirits",
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_name_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky",
+        "imported": false,
+        "country_of_origin": null
+      },
+      "extraction": {
+        "is_alcohol_label": true,
+        "image_quality": "good",
+        "quality_issues": [],
+        "brand_name": {
+          "text": "OLD TOM DISTILLERY",
+          "legibility": "clear"
+        },
+        "class_type": {
+          "text": "Kentucky Straight Bourbon Whiskey",
+          "legibility": "clear"
+        },
+        "alcohol_content": {
+          "text": "45% Alc./Vol. (90 Proof)",
+          "legibility": "clear"
+        },
+        "net_contents": {
+          "text": "750 mL",
+          "legibility": "clear"
+        },
+        "bottler_name_address": {
+          "text": "Bottled by Old Tom Distillery, Bardstown, Kentucky",
+          "legibility": "clear"
+        },
+        "country_of_origin": {
+          "text": null,
+          "legibility": "absent"
+        },
+        "government_warning": {
+          "full_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+          "prefix_as_printed": "GOVERNMENT WARNING:",
+          "prefix_looks_bold": "yes",
+          "legibility": "clear"
+        }
+      }
+    },
+    {
+      "name": "stones_throw_gin",
+      "title": "Stone's Throw gin (brand in capitals on the label)",
+      "file": "stones_throw_gin.png",
+      "sha256": "2d0609e2b0ed44f0581490fc65b7a701d32312d177d3acd67e4977bb00954fdf",
+      "application": {
+        "beverage_type": "distilled_spirits",
+        "brand_name": "Stone's Throw",
+        "class_type": "London Dry Gin",
+        "alcohol_content": "41.5% Alc./Vol.",
+        "net_contents": "750 mL",
+        "bottler_name_address": "Distilled and bottled by Stone's Throw Spirits, Portland, Oregon",
+        "imported": false,
+        "country_of_origin": null
+      },
+      "extraction": {
+        "is_alcohol_label": true,
+        "image_quality": "good",
+        "quality_issues": [],
+        "brand_name": {
+          "text": "STONE'S THROW",
+          "legibility": "clear"
+        },
+        "class_type": {
+          "text": "London Dry Gin",
+          "legibility": "clear"
+        },
+        "alcohol_content": {
+          "text": "Alc. 41.5% by Vol.",
+          "legibility": "clear"
+        },
+        "net_contents": {
+          "text": "750 mL",
+          "legibility": "clear"
+        },
+        "bottler_name_address": {
+          "text": "Distilled and bottled by Stone's Throw Spirits, Portland, Oregon",
+          "legibility": "clear"
+        },
+        "country_of_origin": {
+          "text": null,
+          "legibility": "absent"
+        },
+        "government_warning": {
+          "full_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+          "prefix_as_printed": "GOVERNMENT WARNING:",
+          "prefix_looks_bold": "yes",
+          "legibility": "clear"
+        }
+      }
+    },
+    {
+      "name": "harbor_light_rum_title_case",
+      "title": "Harbor Light rum (warning lead-in in title case)",
+      "file": "harbor_light_rum_title_case.png",
+      "sha256": "0dd983e01c725289b70bd7195c0617b52b82a6d6d29e805d73bb5f23728c56f9",
+      "application": {
+        "beverage_type": "distilled_spirits",
+        "brand_name": "HARBOR LIGHT",
+        "class_type": "Gold Rum",
+        "alcohol_content": "40% Alc./Vol. (80 Proof)",
+        "net_contents": "1 L",
+        "bottler_name_address": "Bottled by Harbor Light Rum Co., Key West, Florida",
+        "imported": false,
+        "country_of_origin": null
+      },
+      "extraction": {
+        "is_alcohol_label": true,
+        "image_quality": "good",
+        "quality_issues": [],
+        "brand_name": {
+          "text": "HARBOR LIGHT",
+          "legibility": "clear"
+        },
+        "class_type": {
+          "text": "Gold Rum",
+          "legibility": "clear"
+        },
+        "alcohol_content": {
+          "text": "40% Alc./Vol. (80 Proof)",
+          "legibility": "clear"
+        },
+        "net_contents": {
+          "text": "1 L",
+          "legibility": "clear"
+        },
+        "bottler_name_address": {
+          "text": "Bottled by Harbor Light Rum Co., Key West, Florida",
+          "legibility": "clear"
+        },
+        "country_of_origin": {
+          "text": null,
+          "legibility": "absent"
+        },
+        "government_warning": {
+          "full_text": "Government Warning: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+          "prefix_as_printed": "Government Warning:",
+          "prefix_looks_bold": "no",
+          "legibility": "clear"
+        }
+      }
+    },
+    {
+      "name": "copper_ridge_vodka_wrong_abv",
+      "title": "Copper Ridge vodka (alcohol content differs)",
+      "file": "copper_ridge_vodka_wrong_abv.png",
+      "sha256": "ce22dacb6778276350cda06fdecf2560b7bc64f3a43db35e60d5dcb2d6dcd30b",
+      "application": {
+        "beverage_type": "distilled_spirits",
+        "brand_name": "COPPER RIDGE",
+        "class_type": "Vodka",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_name_address": "Bottled by Copper Ridge Distilling, Boise, Idaho",
+        "imported": false,
+        "country_of_origin": null
+      },
+      "extraction": {
+        "is_alcohol_label": true,
+        "image_quality": "good",
+        "quality_issues": [],
+        "brand_name": {
+          "text": "COPPER RIDGE",
+          "legibility": "clear"
+        },
+        "class_type": {
+          "text": "Vodka",
+          "legibility": "clear"
+        },
+        "alcohol_content": {
+          "text": "40% Alc./Vol. (80 Proof)",
+          "legibility": "clear"
+        },
+        "net_contents": {
+          "text": "750 mL",
+          "legibility": "clear"
+        },
+        "bottler_name_address": {
+          "text": "Bottled by Copper Ridge Distilling, Boise, Idaho",
+          "legibility": "clear"
+        },
+        "country_of_origin": {
+          "text": null,
+          "legibility": "absent"
+        },
+        "government_warning": {
+          "full_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+          "prefix_as_printed": "GOVERNMENT WARNING:",
+          "prefix_looks_bold": "yes",
+          "legibility": "clear"
+        }
+      }
+    },
+    {
+      "name": "domaine_viale_wine_reworded",
+      "title": "Domaine Viale wine (imported; warning reworded)",
+      "file": "domaine_viale_wine_reworded.png",
+      "sha256": "65d7d793f425849afbf1058a3c7af4335ecdb261e64c1d00a267a30873271ec0",
+      "application": {
+        "beverage_type": "wine",
+        "brand_name": "DOMAINE VIALE",
+        "class_type": "Red Wine",
+        "alcohol_content": "13.5% Alc./Vol.",
+        "net_contents": "750 mL",
+        "bottler_name_address": "Imported by Viale Imports LLC, New York, NY",
+        "imported": true,
+        "country_of_origin": "Product of France"
+      },
+      "extraction": {
+        "is_alcohol_label": true,
+        "image_quality": "good",
+        "quality_issues": [],
+        "brand_name": {
+          "text": "DOMAINE VIALE",
+          "legibility": "clear"
+        },
+        "class_type": {
+          "text": "Red Wine",
+          "legibility": "clear"
+        },
+        "alcohol_content": {
+          "text": "13.5% Alc./Vol.",
+          "legibility": "clear"
+        },
+        "net_contents": {
+          "text": "75 cL",
+          "legibility": "clear"
+        },
+        "bottler_name_address": {
+          "text": "Imported by Viale Imports LLC, New York, NY",
+          "legibility": "clear"
+        },
+        "country_of_origin": {
+          "text": "Product of France",
+          "legibility": "clear"
+        },
+        "government_warning": {
+          "full_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should avoid drinking alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+          "prefix_as_printed": "GOVERNMENT WARNING:",
+          "prefix_looks_bold": "yes",
+          "legibility": "clear"
+        }
+      }
+    }
+  ]
+}

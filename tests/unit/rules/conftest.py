@@ -51,6 +51,9 @@ def application(**overrides: Any) -> ApplicationData:
 def extraction(**overrides: Any) -> LabelExtraction:
     """A clean, fully legible read of the sample label."""
     values: dict[str, Any] = {
+        "is_alcohol_label": True,
+        "image_quality": "good",
+        "quality_issues": [],
         "brand_name": read("OLD TOM DISTILLERY"),
         "class_type": read("Kentucky Straight Bourbon Whiskey"),
         "alcohol_content": read("45% Alc./Vol. (90 Proof)"),

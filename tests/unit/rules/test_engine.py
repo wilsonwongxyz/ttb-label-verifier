@@ -69,7 +69,24 @@ def test_not_a_label_cant_be_read() -> None:
     assert report.status == OverallStatus.CANT_READ
 
 
-def test_empty_extraction_is_never_all_clear() -> None:
-    report = verify(application(), LabelExtraction())
+def test_nothing_on_the_label_is_never_all_clear() -> None:
+    absent = read(None)
+    report = verify(
+        application(),
+        extraction(
+            brand_name=absent,
+            class_type=absent,
+            alcohol_content=absent,
+            net_contents=absent,
+            bottler_name_address=absent,
+            government_warning=warning(None),
+        ),
+    )
     assert report.status == OverallStatus.ISSUES_FOUND
     assert not any(f.verdict == Verdict.MATCH for f in report.fields)
+
+
+def test_unreadable_stand_in_needs_review_everywhere() -> None:
+    report = verify(application(), LabelExtraction.unreadable())
+    assert report.status == OverallStatus.NEEDS_REVIEW
+    assert {f.verdict for f in report.fields} <= {Verdict.NEEDS_REVIEW, Verdict.NOT_APPLICABLE}

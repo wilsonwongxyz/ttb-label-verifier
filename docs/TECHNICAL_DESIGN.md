@@ -69,7 +69,7 @@ The core flow is **extract → compare**, with a hard boundary between the two:
 - Downscale so the long edge is at most 1568 px. This keeps image tokens around 1.6k, which helps latency and cost, and Claude doesn't use detail beyond this size.
 - Cheap checks run before spending a model call:
   - an image under ~300 px on the short edge is rejected with "This image is too small to read";
-  - a very low Laplacian variance (heavy blur) adds a warning but still goes to the model.
+  - blur is left to the model, which reports it in `quality_issues`. (A pixel-statistics blur check was tried and dropped: a label's printed borders swamp the signal.)
 - Deskewing and glare correction are deferred to P2 (F-9). The model already copes with moderate skew and glare, and the evaluation set measures how well.
 
 ## 5. Extraction (`extract/`)
