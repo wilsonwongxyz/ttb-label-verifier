@@ -168,11 +168,11 @@ class FieldResult(BaseModel):
 | **V-4 Net contents** | Parse `<number> <unit>` with these units: mL, cL, L, fl oz (1 US fl oz = 29.5735 mL). Compare in mL with a 0.5% tolerance for unit rounding. Same number and same unit → MATCH. Equal after conversion → MATCH_NOTED ("750 mL = 75 cL"). |
 | **V-5 Warning text** | Compare against the 27 CFR §16.21 constant (see PRD). Tokenize into words; `difflib.SequenceMatcher` on case-folded words gives a word-level diff. Any added, missing or changed word → MISMATCH. Differences only in punctuation → NEEDS_REVIEW, because OCR punctuation noise is common and agents must confirm it. |
 | **V-6 Warning prefix** | `prefix_as_printed` must equal `"GOVERNMENT WARNING:"` exactly (case-sensitive). Title case or lower case → MISMATCH ("Must be in all capital letters"). |
-| **V-7 Bold** | Never MATCH. `yes` → NEEDS_REVIEW ("Looks bold — please confirm"). `no` → NEEDS_REVIEW ("May not be bold — please check"). Photos can't establish font weight reliably. |
+| **V-7 Bold** | Never a plain MATCH, because photos can't establish font weight reliably. `yes` → MATCH_NOTED ("Looks bold in the photo…"). `no` or `unsure` → NEEDS_REVIEW. (An earlier draft sent every label to review here, which would have made **All Clear** impossible.) |
 | **V-8 Bottler / Origin** | Normalized fuzzy compare. Any difference → NEEDS_REVIEW. Country of origin is checked only when `imported = true`. |
 | **Overall status** (F-10) | `is_alcohol_label == false` or `image_quality == unusable` → **Can't Read Image**. Any MISMATCH → **Issues Found**. Any NEEDS_REVIEW → **Needs Review**. Otherwise **All Clear**. |
 
-The rule engine is the most heavily tested part of the system (§9.1). Every example in the PRD and the README (STONE'S THROW, title-case warning, "45% Alc./Vol. (90 Proof)", 750 mL) has a named test.
+The rule engine is the most heavily tested part of the system (§9.1). Every example in the PRD and the assignment brief (STONE'S THROW, title-case warning, "45% Alc./Vol. (90 Proof)", 750 mL) has a named test.
 
 ## 7. Batch processing (`batch/`)
 

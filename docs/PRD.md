@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | Draft v0.1 |
 | **Owner** | Wilson Wong |
-| **Source** | `README.md` (discovery interviews + technical brief) |
+| **Source** | [`ASSIGNMENT.md`](./ASSIGNMENT.md) (discovery interviews + technical brief) |
 | **Type** | Standalone proof-of-concept that may inform a future procurement decision. Not a production system. |
 
 ---
@@ -92,7 +92,7 @@ The model extracts the values and deterministic code compares them. The model ne
 | V-4 | Net contents | Parse quantity and unit, convert to mL (mL, cL, L, fl oz), and compare values. "750 mL" = "75 cL" → **Match (noted)**. | P0 |
 | V-5 | Government warning (text) | The text must match the 27 CFR §16.21 statement word for word, compared after normalizing whitespace and line breaks only. Any added, missing or changed word → **Mismatch**, with a word-level diff. Differences only in punctuation → **Needs Review** (it could be an OCR error). Missing → **Mismatch**. | P0 |
 | V-6 | Government warning (prefix) | "GOVERNMENT WARNING:" must be all caps exactly as written. Title case or lower case → **Mismatch**. | P0 |
-| V-7 | Government warning (bold) | Bold weight cannot be judged reliably from a photo, so report the model's assessment as **Needs Review**, never as Match. | P1 |
+| V-7 | Government warning (bold) | Bold weight cannot be measured reliably from a photo. "Looks bold" → **Match (noted)** with that caveat shown, never a plain Match. "Not bold" or unsure → **Needs Review**. | P1 |
 | V-8 | Bottler name/address, country of origin | Normalized fuzzy comparison. Default to **Needs Review** on any difference (addresses vary in format). Country of origin is required only when the item is marked as imported. | P1 |
 | V-9 | Beverage-type rules | Apply type-specific requirements, e.g. ABV is optional for some wine and beer. A missing optional field → **N/A**, not Mismatch. | P1 |
 
@@ -176,7 +176,7 @@ The order follows the brief: *"A working core application with clean code is pre
 
 ## Appendix A: Requirement traceability
 
-| Source (README) | Signal | Requirement(s) |
+| Source (assignment brief) | Signal | Requirement(s) |
 |---|---|---|
 | Sarah: "just... matching" | Core job to be done | G1, V-1–V-4 |
 | Sarah: vendor pilot 30–40 s, "about 5 seconds" | Hard adoption gate | G3, N-1 |
