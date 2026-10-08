@@ -1,0 +1,17 @@
+# Render blueprint: New > Blueprint, point it at this repository, then fill in the secrets.
+services:
+  - type: web
+    name: label-verifier
+    runtime: docker
+    plan: starter        # the free plan sleeps when idle; a 30-60 s cold start breaks the 5 s promise
+    numInstances: 1      # batch jobs live in memory (DECISIONS.md D13)
+    healthCheckPath: /healthz
+    envVars:
+      - key: LV_ANTHROPIC_API_KEY
+        sync: false      # set in the dashboard; never committed
+      - key: LV_ACCESS_CODE
+        sync: false      # optional: share it with reviewers
+      - key: LV_MODEL
+        value: claude-haiku-5-5
+      - key: LV_EFFORT
+        value: low

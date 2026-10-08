@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Access code{% endblock %}
+{% block content %}
+<h1>Enter the access code</h1>
+<p>This prototype is shared with reviewers only. Enter the access code you were given.</p>
+{% if error %}<div class="alert" role="alert"><p><strong>{{ error }}</strong></p></div>{% endif %}
+<form method="post" action="/access" class="access-form">
+  <input type="hidden" name="next" value="{{ next }}">
+  <div class="field">
+    <label for="code">Access code</label>
+    <input type="text" id="code" name="code" autocomplete="off" required autofocus>
+  </div>
+  <button class="primary" type="submit">Continue</button>
+</form>
+{% endblock %}

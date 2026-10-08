@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ status[2] }}{% endblock %}
+
+{% macro diff_view(diff) -%}
+<span class="diff">
+  {%- for span in diff -%}
+    {%- if span.op == "equal" -%}{{ span.expected }}
+    {%- else -%}
+      {%- if span.expected %}<del title="In the application or rule, not on the label">{{ span.expected }}</del>{% endif -%}
+      {%- if span.found %}<ins title="On the label">{{ span.found }}</ins>{% endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+</span>
+{%- endmacro %}
+
+{% block content %}
+{% if back_url %}<p><a href="{{ back_url }}">&larr; Back to the batch</a></p>
+<h1 class="item-name">{{ item_name }}</h1>{% endif %}
+<section class="status status-{{ status[0] }}" role="status" aria-live="polite">
+  <p class="status-title"><span class="icon" aria-hidden="true">{{ status[1] }}</span> {{ status[2] }}</p>
+  <p class="status-detail">{{ status[3] }}</p>
+  {% if quality_issues %}
+  <p class="status-detail">The photo has: {{ quality_issues | join(", ") | replace("_", " ") }}.</p>
+  {% endif %}
+</section>
+
+<div class="result-layout">
+  <section class="checklist" aria-labelledby="checklist-heading">
+    <h2 id="checklist-heading">Checklist</h2>
+    <table>
+      <thead>
+        <tr><th scope="col">Item</th><th scope="col">Application says</th><th scope="col">Label says</th><th scope="col">Result</th></tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        {% set v = verdicts[row.verdict] %}
+        <tr class="row-{{ v[0] }}" id="field-{{ row.field }}">
+          <th scope="row">{{ row.label }}</th>
+          {% if row.field == "warning_text" and row.found %}
+          {# The statement is long: show it once, with the differences marked in place. #}
+          <td>The required statement</td>
+          <td>{% if row.diff %}{{ diff_view(row.diff) }}{% else %}{{ row.found }}{% endif %}</td>
+          {% else %}
+          <td>{{ row.expected or "—" }}</td>
+          <td>{{ row.found or "—" }}{% if row.diff %}<br><span class="diff-note">{{ diff_view(row.diff) }}</span>{% endif %}</td>
+          {% endif %}
+          <td>
+            <span class="verdict verdict-{{ v[0] }}"><span aria-hidden="true">{{ v[1] }}</span> {{ v[2] }}</span>
+            <p class="reason">{{ row.reason }}</p>
+            {% if row.overridden_from %}
+            <p class="overridden">The tool said: {{ verdicts[row.overridden_from][2] }}.</p>
+            {% endif %}
+            {% if override_url and row.verdict != "n/a" %}
+              {% if row.overridden_from %}
+              <form method="post" action="{{ override_url }}">
+                <input type="hidden" name="field" value="{{ row.field }}">
+                <button class="link-button" type="submit" name="undo" value="1">Undo my change</button>
+              </form>
+              {% else %}
+              <details class="override">
+                <summary>Disagree?</summary>
+                <form method="post" action="{{ override_url }}">
+                  <input type="hidden" name="field" value="{{ row.field }}">
+                  <fieldset>
+                    <legend class="visually-hidden">Your decision for {{ row.label }}</legend>
+                    <label class="choice"><input type="radio" name="verdict" value="match" required> It matches</label>
+                    <label class="choice"><input type="radio" name="verdict" value="mismatch"> It doesn't match</label>
+                  </fieldset>
+                  <label for="reason-{{ row.field }}">Reason</label>
+                  <input type="text" id="reason-{{ row.field }}" name="reason" required maxlength="300" placeholder="e.g. same brand, different capitalization">
+                  <button class="secondary" type="submit">Save</button>
+                </form>
+              </details>
+              {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="hint"><del>Struck out</del> = expected but not on the label; <ins>highlighted</ins> = on the label instead.{% if not demo_mode %} Checked in {{ "%.1f" | format(seconds) }} seconds.{% endif %}</p>
+  </section>
+
+  <aside class="label-image" aria-label="The label photo">
+    <a href="{{ image_uri }}" target="_blank" rel="noopener">
+      <img src="{{ image_uri }}" alt="The label photo that was checked">
+    </a>
+    <p class="hint">Select the photo to open it full size.</p>
+  </aside>
+</div>
+
+<p class="actions">{% if back_url %}<a class="button primary" href="{{ back_url }}">Back to the batch</a>{% else %}<a class="button primary" href="/">Check another label</a>{% endif %}</p>
+{% endblock %}

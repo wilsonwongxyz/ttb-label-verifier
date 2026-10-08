@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Label Check{% endblock %} · Label Verifier</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <a class="site-name" href="/">Label Verifier</a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/">Check one label</a>
+      <a href="/batch">Check many labels</a>
+    </nav>
+  </header>
+  {% if demo_mode %}
+  <p class="demo-banner" role="note">
+    <strong>Demo mode.</strong> Only the example labels can be checked; their readings are pre-recorded.
+  </p>
+  {% endif %}
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', path='app.js') }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<div data-finished="{{ 'yes' if job.finished else 'no' }}">
+  <section class="progress" role="status" aria-live="polite">
+    {% set total = job.items | length %}
+    <p class="progress-text"><strong>{{ job.done_count }} of {{ total }}</strong> {{ "labels checked" if job.finished else "checked so far…" }}</p>
+    <progress max="{{ total }}" value="{{ job.done_count }}">{{ job.done_count }} of {{ total }}</progress>
+    {% if job.finished %}
+    <p>
+      <strong>{{ attention }}</strong> need{{ "s" if attention == 1 else "" }} attention ·
+      <strong>{{ counts["all_clear"] }}</strong> all clear
+    </p>
+    {% endif %}
+  </section>
+
+  <div class="table-tools">
+    <nav class="filters" aria-label="Show">
+      {% for value, label in filters %}
+      <a href="/batch/{{ job.id }}?show={{ value }}" {% if show == value %}aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </nav>
+    {% if job.finished %}
+    <a class="button secondary" href="/batch/{{ job.id }}/results.csv">Download results (CSV)</a>
+    {% if job.retry_work %}
+    <form method="post" action="/batch/{{ job.id }}/retry">
+      <button class="secondary" type="submit">Retry {{ job.retry_work | length }} failed label{{ "s" if job.retry_work | length != 1 else "" }}</button>
+    </form>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  <table class="batch-table">
+    <thead>
+      <tr><th scope="col">Row</th><th scope="col">Photo</th><th scope="col">Brand</th><th scope="col">Result</th><th scope="col">What to look at</th></tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      {% set kind = row_kind(item) %}
+      {% set d = row_display[kind] %}
+      <tr class="row-{{ d[0] }}">
+        <td>{{ item.row_number or "—" }}</td>
+        <th scope="row">
+          {% if item.check %}<a href="/batch/{{ job.id }}/items/{{ item.index }}">{{ item.filename }}</a>{% else %}{{ item.filename or "—" }}{% endif %}
+        </th>
+        <td>{{ item.brand_name or "—" }}</td>
+        <td><span class="verdict verdict-{{ d[0] }}"><span aria-hidden="true">{{ d[1] }}</span> {{ d[2] }}</span></td>
+        <td>{{ issues(item) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5">Nothing to show for this filter.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
