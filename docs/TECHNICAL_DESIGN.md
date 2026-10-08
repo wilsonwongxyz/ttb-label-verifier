@@ -199,7 +199,7 @@ bottler_name_address, imported, country_of_origin
 
 | Screen | Contents |
 |---|---|
-| **Home** | Two large buttons: **Check one label** and **Check many labels**. Nothing else. |
+| **Home** | Opens straight on **Check one label** (the everyday task). The header links to **Check one label** and **Check many labels**. An earlier sketch with a separate two-button home page was dropped as an extra click. |
 | **Check one label** | Left: an image drop zone with a "Choose photo" button and a preview. Right: the application form (brand name, class/type, alcohol content, net contents, bottler, imported? → country, beverage type). One primary button, **Check label**. A small "Try an example" link fills in the sample (F-3). |
 | **Result** | An overall status banner (icon + word + color). A checklist table with columns *Field · Application says · Label says · Result · Why*. The image beside it, with zoom on click. A word-diff panel for the warning. A per-row "Override" option that requires a short reason. **Check another label** button. |
 | **Batch** | Step 1, upload images and spreadsheet (with a template link). Step 2, pre-flight summary with a **Start** button. Step 3, a progress bar ("124 of 300 checked") and a live table with status filters. **Download results (CSV)**. |
