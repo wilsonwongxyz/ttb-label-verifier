@@ -86,3 +86,13 @@ Short records of the decisions that shape this prototype, newest last. Each entr
 **Decision:** On a batch item's detail page, an agent can mark any field "It matches" or "It doesn't match", with a required reason, and can undo it. The override changes the label's status, the results table and the CSV export, which records what the tool said, what the agent said and why. The tool's original verdict stays visible.
 **Why:** Dave's point that "you need judgment" (PRD F-13). Keeping the tool's verdict next to the agent's makes disagreements reviewable, and they could later feed back into the evaluation set.
 **Cost:** Single-label checks store nothing (D8), so there is nowhere to record an override there; the agent's own judgement is the record. An override can't turn an unreadable image into a pass.
+
+### D16. Evaluate on synthetic labels with planted defects and simulated phone photos
+**Decision:** The evaluation set (`evals/`) has 34 cases:
+- 11 rendered labels: the 5 samples plus 6 with new defects (proof ≠ 2×ABV, truncated warning, missing warning, wrong net contents, a misspelled brand, and a beer with no ABV);
+- 2 simulated phone photos of each, plus each clean scan;
+- one "not a label" control.
+
+The headline metric is the **false-clear count**: an "All clear" on a label with a real problem, which must be 0. A degraded photo may land on "Needs review" or "Can't read" without counting as wrong.
+**Why:** Ground truth is exact (we drew the text), the cases map one-to-one to the requirements, and we avoid using real applicants' labels. Scoring caution as acceptable matches PRD §8.
+**Cost:** Synthetic labels are cleaner than real bottles (no curved surfaces or decorative fonts), so real-world accuracy will be lower. Adding real public COLA images is the obvious next step.

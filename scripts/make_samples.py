@@ -155,7 +155,7 @@ SAMPLES: list[dict[str, Any]] = [
 WIDTH, HEIGHT, MARGIN = 900, 1200, 70
 
 
-def centered(draw: ImageDraw.ImageDraw, y: int, text: str, face: Any, fill: str) -> int:
+def centered(draw: ImageDraw.ImageDraw, y: float, text: str, face: Any, fill: str) -> float:
     left, top, right, bottom = draw.textbbox((0, 0), text, font=face)
     draw.text(((WIDTH - (right - left)) / 2, y), text, font=face, fill=fill)
     return y + (bottom - top)
@@ -168,10 +168,11 @@ def render(sample: dict[str, Any]) -> Image.Image:
     draw.rectangle((25, 25, WIDTH - 25, HEIGHT - 25), outline=ink, width=6)
     draw.rectangle((40, 40, WIDTH - 40, HEIGHT - 40), outline=ink, width=2)
 
-    y = 130
+    y: float = 130
     y = centered(draw, y, sample["brand"], font("DejaVuSerif-Bold.ttf", 64), ink) + 40
     y = centered(draw, y, sample["class_type"], font("DejaVuSerif.ttf", 34), ink) + 90
-    y = centered(draw, y, sample["alcohol"], font("DejaVuSans-Bold.ttf", 34), ink) + 30
+    if sample["alcohol"]:
+        y = centered(draw, y, sample["alcohol"], font("DejaVuSans-Bold.ttf", 34), ink) + 30
     y = centered(draw, y, sample["net"], font("DejaVuSans.ttf", 34), ink) + 80
     small = font("DejaVuSans.ttf", 22)
     for line in textwrap.wrap(sample["bottler"], 60):
@@ -179,6 +180,8 @@ def render(sample: dict[str, Any]) -> Image.Image:
     if sample["origin"]:
         y = centered(draw, y + 10, sample["origin"], font("DejaVuSans-Bold.ttf", 24), ink) + 10
 
+    if sample["body"] is None:  # a label with no health warning at all
+        return image
     y = HEIGHT - 300
     prefix_font = font("DejaVuSans-Bold.ttf" if sample["prefix_bold"] else "DejaVuSans.ttf", 20)
     draw.text((MARGIN, y), sample["prefix"], font=prefix_font, fill=ink)
@@ -208,6 +211,13 @@ def reading(sample: dict[str, Any]) -> dict[str, Any]:
             "prefix_as_printed": sample["prefix"],
             "prefix_looks_bold": "yes" if sample["prefix_bold"] else "no",
             "legibility": "clear",
+        }
+        if sample["body"] is not None
+        else {
+            "full_text": None,
+            "prefix_as_printed": None,
+            "prefix_looks_bold": "unsure",
+            "legibility": "absent",
         },
     }
 

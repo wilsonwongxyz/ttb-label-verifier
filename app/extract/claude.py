@@ -33,6 +33,10 @@ class ClaudeExtractor:
         self._model = model
         self._effort = effort
         self._max_tokens = max_tokens
+        # Running totals, for cost reporting in evaluations.
+        self.calls = 0
+        self.input_tokens = 0
+        self.output_tokens = 0
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "ClaudeExtractor":
@@ -98,6 +102,9 @@ class ClaudeExtractor:
             log.warning("extraction unavailable: %s", type(exc).__name__)
             raise ExtractionError(_TRY_AGAIN, retryable=True) from exc
 
+        self.calls += 1
+        self.input_tokens += response.usage.input_tokens
+        self.output_tokens += response.usage.output_tokens
         log.info(
             "extraction model=%s ms=%d in=%d out=%d stop=%s",
             self._model,

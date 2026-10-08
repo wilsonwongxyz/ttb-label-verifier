@@ -13,13 +13,15 @@ An AI-assisted tool that checks alcohol label images against the values in a TTB
 | Image preparation and Claude extraction, offline demo mode | ✅ |
 | Single-label web page | ✅ |
 | Batch upload with live results and CSV export | ✅ |
-| Evaluation harness and model selection | ⏳ |
+| Evaluation harness (34-case dataset, oracle check in CI) | ✅ |
+| Real-model evaluation and final model choice | ⏳ waiting on API key |
 
 ## Documentation
 
 - [`docs/PRD.md`](docs/PRD.md): problem, users, requirements, success metrics, and how each stakeholder remark maps to a requirement.
 - [`docs/TECHNICAL_DESIGN.md`](docs/TECHNICAL_DESIGN.md): architecture, latency budget, model selection, rule definitions, testing and trade-offs.
 - [`docs/DECISIONS.md`](docs/DECISIONS.md): log of the key design decisions, each with its reason and cost.
+- [`evals/README.md`](evals/README.md): the evaluation dataset, scoring and how to run it; results in [`evals/RESULTS.md`](evals/RESULTS.md).
 
 ## Setup
 
