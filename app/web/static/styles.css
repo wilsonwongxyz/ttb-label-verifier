@@ -161,3 +161,13 @@ code { background: var(--panel); padding: 0 .3rem; border-radius: 4px; }
   .batch-table td:nth-of-type(1)::before { content: "Row "; }
   .batch-table td:nth-of-type(2)::before, .batch-table td:nth-of-type(3)::before { content: none; }
 }
+
+/* Overrides */
+.overridden { margin: .3rem 0 0; color: var(--muted); font-style: italic; }
+.override { margin-top: .5rem; }
+.override summary { cursor: pointer; color: var(--accent); font-weight: 600; min-height: 2rem; }
+.override form { display: grid; gap: .5rem; margin-top: .5rem; }
+.override fieldset { border: 0; padding: 0; margin: 0; }
+.override .choice { min-height: 2.4rem; }
+.link-button { background: none; border: 0; padding: .3rem 0; color: var(--accent); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

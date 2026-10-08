@@ -163,3 +163,44 @@ def test_unknown_batch_is_a_friendly_404() -> None:
     assert response.status_code == 404
     assert "expired" in response.text
     assert "<h1>" in response.text
+
+
+def test_agent_can_override_and_undo() -> None:
+    with app() as client:
+        url = upload(client, NAMES).headers["location"]
+        wait_until_finished(client, url)
+        index = NAMES.index("copper_ridge_vodka_wrong_abv")
+        item = f"{url}/items/{index}"
+        assert "Disagree?" in client.get(item).text
+
+        saved = client.post(
+            item + "/override",
+            data={"field": "alcohol_content", "verdict": "match", "reason": "Amended to 40%"},
+            follow_redirects=False,
+        )
+        assert saved.status_code == 303
+        detail = client.get(item).text
+        assert "Changed by the agent: Amended to 40%" in detail
+        assert "The tool said: Doesn" in detail
+        assert "All clear" in detail
+
+        export = list(csv.DictReader(io.StringIO(client.get(url + "/results.csv").text)))
+        vodka = next(r for r in export if r["image_filename"].startswith("copper"))
+        assert vodka["result"] == "All clear"
+        assert vodka["Alcohol content"] == "match"
+        assert "tool said mismatch, agent said match (Amended to 40%)" in vodka["agent_changes"]
+
+        client.post(item + "/override", data={"field": "alcohol_content", "undo": "1"})
+        assert "Issues found" in client.get(item).text
+
+
+def test_override_needs_a_reason_and_a_real_field() -> None:
+    with app() as client:
+        url = upload(client, NAMES).headers["location"]
+        wait_until_finished(client, url)
+        item = f"{url}/items/0/override"
+        no_reason = client.post(item, data={"field": "brand_name", "verdict": "match"})
+        assert no_reason.status_code == 400
+        assert "give a short reason" in no_reason.text
+        bad_field = client.post(item, data={"field": "nope", "verdict": "match", "reason": "x"})
+        assert bad_field.status_code == 400

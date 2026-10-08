@@ -90,3 +90,37 @@ def test_unreadable_stand_in_needs_review_everywhere() -> None:
     report = verify(application(), LabelExtraction.unreadable())
     assert report.status == OverallStatus.NEEDS_REVIEW
     assert {f.verdict for f in report.fields} <= {Verdict.NEEDS_REVIEW, Verdict.NOT_APPLICABLE}
+
+
+def test_override_changes_the_verdict_and_status_but_keeps_the_original() -> None:
+    from app.rules.engine import with_overrides
+    from app.rules.models import Override
+
+    extraction_ = extraction(alcohol_content=read("40% Alc./Vol. (80 Proof)"))
+    report = verify(application(), extraction_)
+    assert report.status == OverallStatus.ISSUES_FOUND
+
+    changed = with_overrides(
+        report,
+        extraction_,
+        {"alcohol_content": Override(verdict=Verdict.MATCH, reason="Amended application")},
+    )
+    field = {f.field: f for f in changed.fields}["alcohol_content"]
+    assert changed.status == OverallStatus.ALL_CLEAR
+    assert field.verdict == Verdict.MATCH
+    assert field.overridden_from == Verdict.MISMATCH
+    assert field.reason == "Changed by the agent: Amended application"
+    # The original report is untouched.
+    assert report.status == OverallStatus.ISSUES_FOUND
+
+
+def test_override_cannot_rescue_an_unreadable_image() -> None:
+    from app.rules.engine import with_overrides
+    from app.rules.models import Override
+
+    extraction_ = extraction(image_quality="unusable")
+    report = verify(application(), extraction_)
+    changed = with_overrides(
+        report, extraction_, {"brand_name": Override(verdict=Verdict.MATCH, reason="x")}
+    )
+    assert changed.status == OverallStatus.CANT_READ

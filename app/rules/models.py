@@ -54,6 +54,15 @@ class FieldResult(BaseModel):
     found: str | None
     reason: str
     diff: list[DiffSpan] | None = None
+    # Set when an agent overrode the tool's verdict; holds what the tool originally said.
+    overridden_from: Verdict | None = None
+
+
+class Override(BaseModel):
+    """An agent's decision to overrule the tool on one field (PRD F-13)."""
+
+    verdict: Literal[Verdict.MATCH, Verdict.MISMATCH]
+    reason: str
 
 
 class VerificationReport(BaseModel):

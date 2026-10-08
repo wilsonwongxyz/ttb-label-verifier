@@ -14,7 +14,8 @@ from enum import StrEnum
 from app.batch.csv_io import ApplicationRow
 from app.extract.base import ExtractionError, LabelExtractor
 from app.imaging.prepare import ImageRejectedError
-from app.rules.models import OverallStatus
+from app.rules.engine import with_overrides
+from app.rules.models import OverallStatus, Override, VerificationReport
 from app.services.verify import LabelCheck, check_label
 
 log = logging.getLogger(__name__)
@@ -37,10 +38,19 @@ class BatchItem:
     check: LabelCheck | None = None
     problem: str | None = None
     retryable: bool = False
+    overrides: dict[str, Override] = field(default_factory=dict)
+
+    @property
+    def report(self) -> VerificationReport | None:
+        """The verification report including any agent overrides."""
+        if self.check is None:
+            return None
+        return with_overrides(self.check.report, self.check.extraction, self.overrides)
 
     @property
     def status(self) -> OverallStatus | None:
-        return self.check.report.status if self.check else None
+        report = self.report
+        return report.status if report else None
 
 
 @dataclass

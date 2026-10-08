@@ -23,7 +23,7 @@ from app.batch.jobs import (
     take_retry_work,
 )
 from app.config import Settings
-from app.rules.models import OverallStatus, Verdict
+from app.rules.models import OverallStatus, Override, Verdict
 from app.web.routes import (
     STATUS_DISPLAY,
     ExtractorDep,
@@ -72,11 +72,12 @@ def _row_kind(item: BatchItem) -> str:
 def _issues(item: BatchItem) -> str:
     if item.problem:
         return item.problem
-    if item.check is None:
+    report = item.report
+    if report is None:
         return ""
     flagged = [
         f"{field.label}: {field.reason}"
-        for field in item.check.report.fields
+        for field in report.fields
         if field.verdict in (Verdict.MISMATCH, Verdict.NEEDS_REVIEW)
     ]
     return " • ".join(flagged)
@@ -251,14 +252,18 @@ async def retry_batch(
     return RedirectResponse(f"/batch/{job.id}", status_code=303)
 
 
+def _item_or_404(job: Job, index: int) -> BatchItem:
+    if not 0 <= index < len(job.items) or job.items[index].check is None:
+        raise HTTPException(404, "That label hasn't been checked.")
+    return job.items[index]
+
+
 @router.get("/{job_id}/items/{index}", response_class=HTMLResponse)
 async def batch_item(
     request: Request, settings: SettingsDep, job_id: str, index: int
 ) -> HTMLResponse:
     job = _job_or_404(request, job_id)
-    if not 0 <= index < len(job.items) or job.items[index].check is None:
-        raise HTTPException(404, "That label hasn't been checked.")
-    item = job.items[index]
+    item = _item_or_404(job, index)
     assert item.check is not None
     return render_page(
         request,
@@ -266,23 +271,64 @@ async def batch_item(
         settings,
         back_url=f"/batch/{job.id}",
         item_name=item.filename,
-        **result_context(item.check),
+        override_url=f"/batch/{job.id}/items/{index}/override",
+        **result_context(item.check, item.report),
     )
+
+
+@router.post("/{job_id}/items/{index}/override")
+async def override_item(request: Request, job_id: str, index: int) -> RedirectResponse:
+    """Record (or, with ``undo``, remove) an agent's override of one field's verdict."""
+    job = _job_or_404(request, job_id)
+    item = _item_or_404(job, index)
+    data = await request.form()
+    field = str(data.get("field", ""))
+    assert item.check is not None
+    if field not in {f.field for f in item.check.report.fields}:
+        raise HTTPException(400, "Unknown item.")
+    if data.get("undo"):
+        item.overrides.pop(field, None)
+    else:
+        verdict = {"match": Verdict.MATCH, "mismatch": Verdict.MISMATCH}.get(
+            str(data.get("verdict", ""))
+        )
+        reason = str(data.get("reason", "")).strip()
+        if verdict is None or not reason:
+            raise HTTPException(
+                400, "Choose whether it matches and give a short reason for the change."
+            )
+        item.overrides[field] = Override(verdict=verdict, reason=reason[:300])
+    return RedirectResponse(f"/batch/{job.id}/items/{index}#field-{field}", status_code=303)
 
 
 @router.get("/{job_id}/results.csv")
 async def batch_export(request: Request, job_id: str) -> Response:
     job = _job_or_404(request, job_id)
-    checked = next((i.check for i in job.items if i.check), None)
-    field_labels = [f.label for f in checked.report.fields] if checked else []
-    header = ["row", "image_filename", "brand_name", "result", "issues", *field_labels]
+    checked = next((i.report for i in job.items if i.report), None)
+    field_labels = [f.label for f in checked.fields] if checked else []
+    header = [
+        "row",
+        "image_filename",
+        "brand_name",
+        "result",
+        "issues",
+        *field_labels,
+        "agent_changes",
+    ]
 
     def row(item: BatchItem) -> list[str]:
         kind = _row_kind(item)
+        report = item.report
         verdicts = (
-            [VERDICT_WORDS[f.verdict] for f in item.check.report.fields]
-            if item.check
+            [VERDICT_WORDS[f.verdict] for f in report.fields]
+            if report
             else [""] * len(field_labels)
+        )
+        changes = "; ".join(
+            f"{f.label}: tool said {VERDICT_WORDS[f.overridden_from]}, agent said "
+            f"{VERDICT_WORDS[f.verdict]} ({item.overrides[f.field].reason})"
+            for f in (report.fields if report else [])
+            if f.overridden_from is not None
         )
         return [
             str(item.row_number or ""),
@@ -291,6 +337,7 @@ async def batch_export(request: Request, job_id: str) -> Response:
             _ROW_DISPLAY[kind][2],
             _issues(item),
             *verdicts,
+            changes,
         ]
 
     items = sorted(job.items, key=lambda i: i.index)

@@ -81,3 +81,8 @@ Short records of the decisions that shape this prototype, newest last. Each entr
 **Decision:** Any exported cell starting with `=`, `+`, `-`, `@`, a tab or a carriage return is prefixed with `'`.
 **Why:** Label text comes from applicants. A brand name such as `=HYPERLINK(...)` would otherwise run as a formula when an agent opens the export in Excel.
 **Cost:** Values that genuinely start with those characters show a leading apostrophe in the CSV.
+
+### D15. Agent overrides are recorded on batch results only
+**Decision:** On a batch item's detail page, an agent can mark any field "It matches" or "It doesn't match", with a required reason, and can undo it. The override changes the label's status, the results table and the CSV export, which records what the tool said, what the agent said and why. The tool's original verdict stays visible.
+**Why:** Dave's point that "you need judgment" (PRD F-13). Keeping the tool's verdict next to the agent's makes disagreements reviewable, and they could later feed back into the evaluation set.
+**Cost:** Single-label checks store nothing (D8), so there is nowhere to record an override there; the agent's own judgement is the record. An override can't turn an unreadable image into a pass.

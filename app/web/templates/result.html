@@ -34,7 +34,7 @@
       <tbody>
         {% for row in rows %}
         {% set v = verdicts[row.verdict] %}
-        <tr class="row-{{ v[0] }}">
+        <tr class="row-{{ v[0] }}" id="field-{{ row.field }}">
           <th scope="row">{{ row.label }}</th>
           {% if row.field == "warning_text" and row.found %}
           {# The statement is long: show it once, with the differences marked in place. #}
@@ -47,6 +47,32 @@
           <td>
             <span class="verdict verdict-{{ v[0] }}"><span aria-hidden="true">{{ v[1] }}</span> {{ v[2] }}</span>
             <p class="reason">{{ row.reason }}</p>
+            {% if row.overridden_from %}
+            <p class="overridden">The tool said: {{ verdicts[row.overridden_from][2] }}.</p>
+            {% endif %}
+            {% if override_url and row.verdict != "n/a" %}
+              {% if row.overridden_from %}
+              <form method="post" action="{{ override_url }}">
+                <input type="hidden" name="field" value="{{ row.field }}">
+                <button class="link-button" type="submit" name="undo" value="1">Undo my change</button>
+              </form>
+              {% else %}
+              <details class="override">
+                <summary>Disagree?</summary>
+                <form method="post" action="{{ override_url }}">
+                  <input type="hidden" name="field" value="{{ row.field }}">
+                  <fieldset>
+                    <legend class="visually-hidden">Your decision for {{ row.label }}</legend>
+                    <label class="choice"><input type="radio" name="verdict" value="match" required> It matches</label>
+                    <label class="choice"><input type="radio" name="verdict" value="mismatch"> It doesn't match</label>
+                  </fieldset>
+                  <label for="reason-{{ row.field }}">Reason</label>
+                  <input type="text" id="reason-{{ row.field }}" name="reason" required maxlength="300" placeholder="e.g. same brand, different capitalization">
+                  <button class="secondary" type="submit">Save</button>
+                </form>
+              </details>
+              {% endif %}
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

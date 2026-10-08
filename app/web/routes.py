@@ -10,7 +10,7 @@ from starlette.datastructures import UploadFile
 from app.config import Settings
 from app.extract.base import ExtractionError, LabelExtractor
 from app.imaging.prepare import ImageRejectedError
-from app.rules.models import OverallStatus, Verdict
+from app.rules.models import OverallStatus, Verdict, VerificationReport
 from app.services.verify import LabelCheck, check_label
 from app.web.forms import BEVERAGE_CHOICES, TEXT_FIELDS, ApplicationForm
 from app.web.samples import Sample, load_samples
@@ -155,11 +155,12 @@ async def check(request: Request, settings: SettingsDep, extractor: ExtractorDep
     return _render_result(request, settings, result)
 
 
-def result_context(result: LabelCheck) -> dict[str, Any]:
-    """Template context for result.html."""
-    rows = sorted(result.report.fields, key=lambda f: _VERDICT_ORDER.index(f.verdict))
+def result_context(result: LabelCheck, report: VerificationReport | None = None) -> dict[str, Any]:
+    """Template context for result.html. ``report`` replaces the check's own (overrides)."""
+    report = report or result.report
+    rows = sorted(report.fields, key=lambda f: _VERDICT_ORDER.index(f.verdict))
     return {
-        "status": STATUS_DISPLAY[result.report.status],
+        "status": STATUS_DISPLAY[report.status],
         "rows": rows,
         "verdicts": VERDICT_DISPLAY,
         "quality_issues": result.extraction.quality_issues,

@@ -12,6 +12,7 @@ from app.rules.models import (
     ApplicationData,
     FieldResult,
     OverallStatus,
+    Override,
     Verdict,
     VerificationReport,
 )
@@ -42,4 +43,28 @@ def verify(app: ApplicationData, extraction: LabelExtraction) -> VerificationRep
         check_warning_prefix(warning),
         check_warning_bold(warning),
     ]
+    return VerificationReport(status=overall_status(extraction, fields), fields=fields)
+
+
+def with_overrides(
+    report: VerificationReport, extraction: LabelExtraction, overrides: dict[str, Override]
+) -> VerificationReport:
+    """The report as the agent has corrected it. The tool's own verdict is kept alongside."""
+    if not overrides:
+        return report
+    fields = []
+    for field in report.fields:
+        override = overrides.get(field.field)
+        if override is None:
+            fields.append(field)
+            continue
+        fields.append(
+            field.model_copy(
+                update={
+                    "verdict": override.verdict,
+                    "reason": f"Changed by the agent: {override.reason}",
+                    "overridden_from": field.verdict,
+                }
+            )
+        )
     return VerificationReport(status=overall_status(extraction, fields), fields=fields)
