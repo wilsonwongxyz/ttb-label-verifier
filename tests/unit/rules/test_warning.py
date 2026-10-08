@@ -49,6 +49,16 @@ def test_any_wording_change_is_a_mismatch(text: str, changed: str) -> None:
         assert any(changed in span.expected for span in result.diff if span.op != "equal")
 
 
+def test_diff_spans_rebuild_both_texts() -> None:
+    text = REQUIRED_WARNING.replace("should not drink", "should avoid drinking")
+    diff = check_warning_text(warning(text)).diff
+    assert diff is not None
+    assert "".join(span.expected for span in diff) == REQUIRED_WARNING
+    assert "".join(span.found for span in diff) == text
+    changed = [(s.expected, s.found) for s in diff if s.op != "equal"]
+    assert changed == [("not drink ", "avoid drinking ")]
+
+
 def test_missing_warning_is_a_mismatch() -> None:
     result = check_warning_text(warning(None))
     assert result.verdict == Verdict.MISMATCH

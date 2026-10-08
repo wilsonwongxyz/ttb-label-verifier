@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Check a label{% endblock %}
+{% block content %}
+<h1>Check a label</h1>
+
+{% if page_error %}
+<div class="alert" role="alert">
+  <p><strong>{{ page_error }}</strong></p>
+</div>
+{% elif form.errors or image_error %}
+<div class="alert" role="alert">
+  <p><strong>Please fix the items marked below.</strong></p>
+</div>
+{% endif %}
+
+<form class="check-form" method="post" action="/check" enctype="multipart/form-data" data-check-form>
+  <section class="panel" aria-labelledby="photo-heading">
+    <h2 id="photo-heading"><span class="step">1</span> Label photo</h2>
+    {% if sample %}
+    <input type="hidden" name="sample" value="{{ sample.name }}">
+    <figure class="preview">
+      <img src="/samples/{{ sample.file }}" alt="Example label: {{ sample.title }}" data-preview>
+      <figcaption>Example: {{ sample.title }}</figcaption>
+    </figure>
+    <p class="hint">Using the example photo. Choose a file below to use your own instead.</p>
+    {% else %}
+    <figure class="preview" hidden>
+      <img alt="Preview of the chosen label photo" data-preview>
+    </figure>
+    {% endif %}
+    <label class="file-label" for="image">Choose photo</label>
+    <input class="file-input" id="image" name="image" type="file"
+           accept="image/jpeg,image/png,image/webp"
+           {% if image_error %}aria-invalid="true" aria-describedby="image-error"{% endif %}>
+    <p class="hint">JPG, PNG or WebP, up to 10 MB.</p>
+    {% if image_error %}<p class="field-error" id="image-error">{{ image_error }}</p>{% endif %}
+  </section>
+
+  <section class="panel" aria-labelledby="application-heading">
+    <h2 id="application-heading"><span class="step">2</span> What the application says</h2>
+
+    <fieldset class="field">
+      <legend>Type of drink</legend>
+      <div class="choices">
+        {% for value, label in beverage_choices %}
+        <label class="choice">
+          <input type="radio" name="beverage_type" value="{{ value.value }}"
+                 {% if form.values.get('beverage_type', 'distilled_spirits') == value.value %}checked{% endif %}>
+          {{ label }}
+        </label>
+        {% endfor %}
+      </div>
+      {% if form.errors.beverage_type %}<p class="field-error">{{ form.errors.beverage_type }}</p>{% endif %}
+    </fieldset>
+
+    {% for name, label, required in text_fields %}
+    {% if name == "country_of_origin" %}
+    <label class="choice field">
+      <input type="checkbox" name="imported" {% if form.values.imported %}checked{% endif %} data-imported>
+      This product is imported
+    </label>
+    {% endif %}
+    <div class="field" {% if name == "country_of_origin" %}data-origin-field{% endif %}>
+      <label for="{{ name }}">{{ label }}{% if not required and name != "alcohol_content" %} <span class="optional">(if on the application)</span>{% endif %}</label>
+      <input id="{{ name }}" name="{{ name }}" type="text" value="{{ form.values.get(name, '') }}"
+             autocomplete="off" spellcheck="false"
+             {% if form.errors.get(name) %}aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}>
+      {% if form.errors.get(name) %}<p class="field-error" id="{{ name }}-error">{{ form.errors[name] }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
+
+  <div class="actions">
+    <button class="primary" type="submit" data-submit>Check label</button>
+    <p class="working" role="status" aria-live="polite" data-working hidden>Reading the label&hellip; this takes a few seconds.</p>
+  </div>
+</form>
+
+<section class="examples" aria-labelledby="examples-heading">
+  <h2 id="examples-heading">Try an example</h2>
+  <ul>
+    {% for s in samples %}
+    <li><a href="/?sample={{ s.name }}">{{ s.title }}</a></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

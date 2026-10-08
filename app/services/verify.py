@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from app.extract.base import LabelExtractor
 from app.extract.schema import LabelExtraction
-from app.imaging.prepare import prepare_image
+from app.imaging.prepare import PreparedImage, prepare_image
 from app.rules import verify
 from app.rules.models import ApplicationData, VerificationReport
 
@@ -15,6 +15,7 @@ from app.rules.models import ApplicationData, VerificationReport
 class LabelCheck:
     report: VerificationReport
     extraction: LabelExtraction
+    image: PreparedImage
     timings_ms: dict[str, int]
 
 
@@ -36,6 +37,7 @@ async def check_label(
     return LabelCheck(
         report=report,
         extraction=extraction,
+        image=image,
         timings_ms={
             "prepare": round((t1 - t0) * 1000),
             "extract": round((t2 - t1) * 1000),

@@ -11,8 +11,8 @@ An AI-assisted tool that checks alcohol label images against the values in a TTB
 | Project scaffold, CI, Docker | ✅ |
 | Rule engine (all field and warning rules) with tests | ✅ |
 | Image preparation and Claude extraction, offline demo mode | ✅ |
-| Single-label UI | ⏳ next |
-| Batch upload | ⏳ |
+| Single-label web page | ✅ |
+| Batch upload | ⏳ next |
 | Evaluation harness and model selection | ⏳ |
 
 ## Documentation
@@ -26,14 +26,14 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync                                   # install dependencies
-uv run uvicorn app.main:app --reload      # http://localhost:8000/healthz
+LV_PROVIDER=fixture uv run uvicorn --factory app.main:create_app --reload   # offline demo at http://localhost:8000
 ```
 
 Or with Docker:
 
 ```bash
 docker build -t label-verifier .
-docker run -p 8000:8000 label-verifier
+docker run -p 8000:8000 -e LV_ANTHROPIC_API_KEY label-verifier
 ```
 
 ## Configuration

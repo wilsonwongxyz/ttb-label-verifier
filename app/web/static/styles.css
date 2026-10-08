@@ -1,0 +1,133 @@
+/* Large type, high contrast, one obvious action per screen (PRD N-5, N-6). */
+:root {
+  --ink: #1a1a1a;
+  --muted: #4a4a4a;
+  --paper: #ffffff;
+  --panel: #f5f6f8;
+  --line: #c9ced6;
+  --accent: #0b5cad;
+  --accent-ink: #ffffff;
+  --ok: #1e6b34;
+  --ok-bg: #e6f4ea;
+  --warn: #8a5300;
+  --warn-bg: #fff4dc;
+  --bad: #a4161a;
+  --bad-bg: #fde8e8;
+  --focus: #ffbf47;
+  font-size: 112.5%; /* 18px base */
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+a { color: var(--accent); }
+:focus-visible { outline: 4px solid var(--focus); outline-offset: 2px; }
+
+.skip-link { position: absolute; left: -999px; }
+.skip-link:focus { left: 1rem; top: 1rem; background: var(--paper); padding: .5rem; }
+
+.site-header {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem 1rem;
+  padding: 1rem clamp(1rem, 4vw, 2.5rem);
+  background: #0f2a44; color: #fff;
+}
+.site-name { color: #fff; font-size: 1.4rem; font-weight: 700; text-decoration: none; }
+.site-tagline { color: #d6e2ef; }
+
+.demo-banner {
+  margin: 0; padding: .6rem clamp(1rem, 4vw, 2.5rem);
+  background: var(--warn-bg); color: var(--warn); border-bottom: 2px solid #e0b25c;
+}
+
+main { max-width: 72rem; margin: 0 auto; padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 4rem; }
+h1 { font-size: 2rem; margin: .5rem 0 1.25rem; }
+h2 { font-size: 1.35rem; margin: 0 0 1rem; }
+
+.check-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 1.5rem; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.25rem; }
+.step {
+  display: inline-grid; place-items: center; width: 2rem; height: 2rem; margin-right: .4rem;
+  border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 1.1rem;
+}
+
+.preview { margin: 0 0 1rem; }
+.preview img { display: block; max-width: 100%; max-height: 22rem; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.preview figcaption { color: var(--muted); margin-top: .4rem; }
+
+.file-input { display: block; width: 100%; font-size: 1rem; padding: .6rem; background: #fff; border: 2px dashed var(--line); border-radius: 8px; min-height: 3rem; }
+.file-label { display: block; font-weight: 700; margin-bottom: .4rem; }
+
+.field { border: 0; padding: 0; margin: 0 0 1.1rem; }
+.field > label, .field legend { display: block; font-weight: 700; margin-bottom: .35rem; }
+.optional { font-weight: 400; color: var(--muted); }
+input[type="text"] {
+  width: 100%; font-size: 1.05rem; padding: .7rem .8rem; min-height: 3rem;
+  border: 2px solid #8a929e; border-radius: 6px; background: #fff; color: var(--ink);
+}
+input[aria-invalid="true"] { border-color: var(--bad); }
+.choices { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+.choice { display: flex; align-items: center; gap: .6rem; min-height: 3rem; font-weight: 400; }
+.choice input { width: 1.4rem; height: 1.4rem; margin: 0; }
+
+.hint { color: var(--muted); margin: .5rem 0 0; }
+.field-error { color: var(--bad); font-weight: 700; margin: .4rem 0 0; }
+.alert { border-left: 6px solid var(--bad); background: var(--bad-bg); padding: .75rem 1rem; margin-bottom: 1.25rem; }
+.alert p { margin: 0; }
+
+.actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: .5rem 0 0; }
+button.primary, a.button.primary {
+  display: inline-block; font-size: 1.2rem; font-weight: 700; padding: .85rem 2.2rem; min-height: 3.2rem;
+  background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; cursor: pointer; text-decoration: none;
+}
+button.primary:disabled { opacity: .6; cursor: progress; }
+.working { margin: 0; font-weight: 700; }
+
+.examples { margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.examples ul { padding-left: 1.2rem; }
+.examples li { margin: .35rem 0; }
+
+/* Result */
+.status { border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; border: 2px solid; }
+.status-title { font-size: 1.8rem; font-weight: 800; margin: 0; }
+.status-detail { margin: .25rem 0 0; font-size: 1.1rem; }
+.status .icon { display: inline-block; width: 1.6em; }
+.status-all-clear { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.status-needs-review { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
+.status-issues-found, .status-cant-read { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+
+.result-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(14rem, 1fr); gap: 1.5rem; align-items: start; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; vertical-align: top; padding: .75rem .6rem; border-bottom: 1px solid var(--line); overflow-wrap: break-word; }
+tbody th { width: 11rem; }
+.diff-note { display: inline-block; margin-top: .3rem; color: var(--muted); }
+thead th { border-bottom: 2px solid var(--ink); }
+tbody th { font-weight: 700; }
+tr.row-mismatch { background: #fff6f6; }
+tr.row-needs-review { background: #fffaf0; }
+.verdict { font-weight: 800; white-space: nowrap; }
+.verdict-match { color: var(--ok); }
+.verdict-needs-review { color: var(--warn); }
+.verdict-mismatch { color: var(--bad); }
+.verdict-not-applicable { color: var(--muted); }
+.reason { margin: .3rem 0 0; color: var(--ink); }
+del { background: var(--bad-bg); color: var(--bad); text-decoration-thickness: 2px; }
+ins { background: #fff1a8; color: var(--ink); text-decoration: none; font-weight: 700; }
+
+.label-image img { width: 100%; border: 1px solid var(--line); border-radius: 6px; }
+
+@media (max-width: 800px) {
+  .check-form, .result-layout { grid-template-columns: 1fr; }
+  thead { display: none; }
+  table, tbody, tr, th, td { display: block; }
+  tr { border-bottom: 2px solid var(--line); padding: .5rem 0; }
+  td, tbody th { border: 0; padding: .25rem .4rem; width: auto; }
+  td:nth-of-type(1)::before { content: "Application says: "; color: var(--muted); }
+  td:nth-of-type(2)::before { content: "Label says: "; color: var(--muted); }
+}

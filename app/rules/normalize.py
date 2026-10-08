@@ -54,13 +54,20 @@ def diff_spans(
     found_key: Sequence[str] | None = None,
     sep: str = "",
 ) -> list[DiffSpan]:
-    """Diff two token sequences, optionally matching on comparison keys but showing originals."""
+    """Diff two token sequences, optionally matching on comparison keys but showing originals.
+
+    Each token keeps its trailing ``sep``, so concatenating the spans in order rebuilds the
+    original texts.
+    """
+    if sep:
+        expected = [t + sep for t in expected[:-1]] + list(expected[-1:])
+        found = [t + sep for t in found[:-1]] + list(found[-1:])
     matcher = SequenceMatcher(
         a=list(key if key is not None else expected),
         b=list(found_key if found_key is not None else found),
         autojunk=False,
     )
     return [
-        DiffSpan(op=op, expected=sep.join(expected[i1:i2]), found=sep.join(found[j1:j2]))
+        DiffSpan(op=op, expected="".join(expected[i1:i2]), found="".join(found[j1:j2]))
         for op, i1, i2, j1, j2 in matcher.get_opcodes()
     ]

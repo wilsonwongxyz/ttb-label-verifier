@@ -13,19 +13,19 @@
 | Decision | Choice | Main driver |
 |---|---|---|
 | Language / framework | **Python 3.12 + FastAPI** | Strongest AI/imaging ecosystem, typed models with Pydantic, async I/O for batch work |
-| Front end | **Server-rendered HTML (Jinja2) + HTMX**, assets vendored locally | Simple UI (N-5), no SPA build, no runtime CDN calls (N-3) |
+| Front end | **Server-rendered HTML (Jinja2)** plus a small vanilla-JS enhancement (preview, client-side downscale, "Checking…" state); works without JavaScript | Simple UI (N-5), no SPA build, no runtime CDN calls (N-3). HTMX was planned, but plain form posts were enough |
 | Extraction | **One vision-LLM call with structured output (JSON schema)** | Handles stylized labels; one round trip fits the 5 s budget (N-1) |
 | Model provider | **Claude via the Anthropic SDK**, behind a `LabelExtractor` interface | Same SDK also targets **Microsoft Foundry** (Azure), the in-tenant path for Marcus's firewall (N-3) |
 | Model tier | **Claude Haiku 5.5** as the latency candidate, chosen by the eval harness against Sonnet 5.5 and Opus 5.5 (§5.4) | p95 ≤ 5 s is the adoption gate |
 | Verification | **Deterministic rule engine in plain Python**; the model never issues the verdict | Explainable, unit-testable, no hallucinated "Match" (PRD §8) |
-| Batch | **In-process async job queue** with bounded concurrency; results polled by HTMX | 300 labels in a few minutes without extra infrastructure |
+| Batch | **In-process async job queue** with bounded concurrency; results polled by a small script | 300 labels in a few minutes without extra infrastructure |
 | State | **In memory only**, with a TTL; nothing written to disk | Privacy (N-4); this is a prototype |
 | Deploy | **One Docker container** on Azure Container Apps (or Render/Fly.io as the fastest fallback) | Matches TTB's Azure footprint (N-8) |
 
 ## 2. Architecture
 
 ```
- Browser (HTMX)
+ Browser
      │  multipart upload (image[s] + application values / CSV)
      ▼
 ┌──────────────────────────── FastAPI app (single container) ────────────────────────────┐
@@ -55,7 +55,7 @@ The core flow is **extract → compare**, with a hard boundary between the two:
 | Validate and prepare image | ≤150 ms | Pillow: verify type, apply EXIF orientation, convert to RGB, downscale to long edge ≤1568 px, re-encode as JPEG q85 |
 | Model call | ≤3.0 s p95 | About 1.6k image tokens + ~400 output tokens. Low effort, short JSON output, streaming off |
 | Rule engine | <10 ms | Pure Python |
-| Render result partial | <50 ms | HTMX swaps it into the page |
+| Render result page | <50 ms | Server-rendered; the label image is embedded as a data URI so nothing is stored |
 | **Total target** | **≤3.5 s p95** | Leaves ~1.5 s of headroom under the 5 s gate (N-1) |
 
 - A spinner with the text "Reading label…" appears immediately (<200 ms, N-1).
@@ -189,7 +189,7 @@ bottler_name_address, imported, country_of_origin
 - `JobStore` is a dict of `job_id → Job(items, created_at)`. Each image is downscaled **when the request is received** and the original bytes are dropped, which keeps memory to about 200 KB per label.
 - Workers run under `asyncio.Semaphore(BATCH_CONCURRENCY)` (default 8; limited by API rate limits). At about 3 s per label, 300 labels finish in about 2 minutes (N-2: ≤5 min).
 - Items are independent. One failure marks only that item as "Couldn't check — retry", and a retry action re-runs only the failed items.
-- The results table is polled by HTMX every 1.5 s (`hx-trigger="every 1.5s"`; polling stops when the job completes). Polling was chosen over SSE because it is simpler and holds up better behind corporate proxies.
+- The results table is polled by a small script every 1.5 s (polling stops when the job completes). Polling was chosen over SSE because it is simpler and holds up better behind corporate proxies.
 - Results are sorted with exceptions first: Issues → Can't Read → Needs Review → All Clear. CSV export (F-15) includes any agent overrides.
 - Jobs are purged **1 hour** after completion (N-4). Limits: 300 images and 500 MB per batch.
 
@@ -258,7 +258,7 @@ Accessibility and UX (N-5, N-6):
 app/
   main.py                 # FastAPI app factory, settings, startup checks
   config.py               # pydantic-settings: PROVIDER, MODEL, timeouts, limits
-  web/                    # routes, Jinja2 templates, static/ (htmx vendored)
+  web/                    # routes, Jinja2 templates, static/ (CSS, one small script)
   services/verify.py      # orchestrates prepare → extract → rules
   imaging/prepare.py
   extract/                # base.py (Protocol), claude.py, fixture.py, prompt.py, schema.py
